@@ -1,4 +1,4 @@
-from View import *
+from src.View import *
 
 
 game = View(DO_INTERFACE)

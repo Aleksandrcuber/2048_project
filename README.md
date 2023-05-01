@@ -25,7 +25,6 @@ The second part of our project is **`View.py`**. Overall, it impements all the g
 The third, and the final part of our project is **`Controller.py`** file. It is responsible for receivingsome sygnals from `View.py` (gotten from a player) and redirecting it to the `Model.py` file for the further working on that. Also it sends some commands to the `View.py` when necessary (to update state of the playing field, for example)
 
 
-
 ## How to play
 
 As the programm starts, it will ask you size of the field you want to play on. Also you can choose music and colour scheme. Select desired settings and press 'Submit' button. Then the game will start.
