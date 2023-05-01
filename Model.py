@@ -76,6 +76,7 @@ class Field:
             self.__table.append(row)
         for _ in range(2):
             self.__fill_random()
+        # self.__fill_consecutively() #To see all colours
 
     def __fill_random(self):
         if not self.__empties:
@@ -180,3 +181,12 @@ class Field:
             ind = self.__get_ind(*arr[k].get_coords())
             self.__empties.add(ind)
         return is_moved
+
+# Use this to generate field with consecutive numbers
+#     def __fill_consecutively(self):
+#         value = 1
+#         for i in range(self.height):
+#             for j in range(self.width):
+#                 self.__table[i][j].val = value
+#                 value *= 2
+#         self.__table[0][0].val = 0

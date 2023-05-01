@@ -35,6 +35,7 @@ class Controller:
 
     def set_view(self, view):
         self.view = view
+        self.model = self.view.model
 
     def start_game(self):
         self.view.refresh_from_model()
