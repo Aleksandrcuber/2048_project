@@ -3,17 +3,20 @@ import pygame
 import random
 from tkinter.ttk import Combobox
 from tkinter.messagebox import askyesno
-from src.View import *
-from src.Inner_Settings import *
+from View import *
+from Inner_Settings import *
+import time
 
 
 class Window:
     def __init__(self):
         self.controller = None
         self.music = None
-        self.colors = Standart()
+        self.colors = Standard()
         self.row_num = 0
         self.col_num = 0
+        self.cells = []
+        self.need_field_configure = False
 
         self.window = tk.Tk()
         self.window.wm_protocol("WM_DELETE_WINDOW", self.__ask_to_quit)
@@ -110,7 +113,7 @@ class Window:
                              font=("Times New Roman", 18),
                              foreground=self.colors.MAIN_FG_COLOR)
         self.choose_color = Combobox(self.dialog, state="readonly", justify=tk.RIGHT, font=("Times New Roman", 16), width=6)
-        self.choose_color['values'] = ["Standart", "Bright", "Dark"]
+        self.choose_color['values'] = ["Standard", "Bright", "Dark"]
         self.choose_color.current(0)
         self.lbl_colors.grid(row=3, column=0, sticky="nsew")
         self.choose_color.grid(row=3, column=1)
@@ -169,12 +172,13 @@ class Window:
         self.col_num = int(self.box_num_cols.get())
         self.music = Music(self.choose_song.get())
         new_color = self.choose_color.get()
-        if new_color == "Standart":
-            self.colors = Standart()
+        if new_color == "Standard":
+            self.colors = Standard()
         elif new_color == "Dark":
             self.colors = Dark()
         else:
             self.colors = Bright()
+        self.need_field_configure = True
         self.dialog.withdraw()
         self.dialog.quit()
 
@@ -233,28 +237,37 @@ class Window:
         root.geometry(f"+{w}+{h}")
 
     def refresh(self, model):
-        self.__update_colors()
+        if self.need_field_configure:
+            self.__configure_field(model)
         self.result['text'] = f"Points: {model.curr_result()}"
         self.moves['text'] = f"Moves: {model.moves}"
         self.__show_random()
+        for i in range(self.row_num):
+            for j in range(self.col_num):
+                self.__update_label(self.cells[i][j], model.get_table()[i][j])
+
+    def __configure_field(self, model):
+        self.__update_colors()
         cell_size = self.__count_cell_size()
         new_field = tk.Frame(self.main_field, bg="#ffffff", relief="ridge", borderwidth=3)
+        self.cells = []
         for i in range(self.row_num):
             new_field.rowconfigure(i, weight=1)
+            self.cells.append(list())
             for j in range(self.col_num):
                 new_field.columnconfigure(j, weight=1)
                 lbl_frame = tk.Frame(new_field, width=cell_size, height=cell_size)
-                lbl_frame.rowconfigure(0, weight=1)
-                lbl_frame.columnconfigure(0, weight=1)
                 label = self.__make_label(model.get_table()[i][j], lbl_frame)
-                label.grid(row=0, column=0, sticky="nsew")
-                lbl_frame.grid_propagate(False)
+                self.cells[i].append(label)
+                label.pack(fill=tk.BOTH, expand=True)
+                lbl_frame.pack_propagate(False)
                 lbl_frame.grid(row=i, column=j, padx=5, pady=5, sticky="nsew")
         self.field.grid_forget()
         self.field = new_field
         new_field.grid(column=0, row=0, sticky="nsew")
         self.__place_window(self.window)
         self.window.deiconify()
+        self.need_field_configure = False
 
     def __count_cell_size(self):
         ans1 = (self.window.winfo_screenwidth() - 600) // self.col_num
@@ -294,18 +307,24 @@ class Window:
         if flag:
             self.controller.quit()
 
-
     def __make_label(self, value, parent):
+        label = tk.Button(parent, borderwidth=4, relief="ridge", font=("Times New Roman", 20))
+        self.__update_label(label, value)
+        return label
+
+    def __update_label(self, label, value):
         number = str(value.val)
         if value.is_empty():
             number = ''
-        label = tk.Button(parent, text=number, borderwidth=4, relief="ridge", font=("Times New Roman", 20), command=lambda: self.__label_pressed(value.val))
-        fgcolor, bgcolor, actfgcolor, actbgcolor = self.colors.choose_color(value.val)
-        label['foreground'] = fgcolor
-        label['background'] = bgcolor
-        label['activeforeground'] = actfgcolor
-        label['activebackground'] = actbgcolor
-        return label
+        fg_color, bg_color, act_fg_color, act_bg_color = self.colors.choose_color(value.val)
+        label.config(
+            text=number,
+            command=lambda: self.__label_pressed(value.val),
+            foreground=fg_color,
+            background=bg_color,
+            activeforeground=act_fg_color,
+            activebackground=act_bg_color
+        )
 
     def __label_pressed(self, num):
         self.messages['text'] = ''
@@ -344,6 +363,17 @@ class Window:
         if x <= WRONG_INPUT_REPORT_CHANCE:
             elem = random.choice(WRONG_INPUT_REPORTS)
             self.messages['text'] = elem
+
+    def activate(self):
+        while True:
+            self.left_button.invoke()
+            self.window.update()
+            self.down_button.invoke()
+            self.window.update()
+            self.right_button.invoke()
+            self.window.update()
+            self.up_button.invoke()
+            self.window.update()
 
 
 class Music:

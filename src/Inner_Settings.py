@@ -9,7 +9,8 @@ MAX_SIZE_VALUE = 10
 MINECRAFT_MUSIC = ["music/C418 - Living Mice.mp3",
                    "music/C418 - Minecraft.mp3",
                    "music/C418 - Subwoofer Lullaby.mp3",
-                   "music/C418 - Sweden.mp3", "C418 - Wet Hands.mp3"]
+                   "music/C418 - Sweden.mp3",
+                   "music/C418 - Wet Hands.mp3"]
 BEETHOVEN_MUSIC = ["music/Piano-Sonata-No.21-1.mp3"]
 CHOPIN_MUSIC = ["music/Chopin-Nocturn-in-c-sharp.mp3"]
 
@@ -87,7 +88,7 @@ class Bright:
         return answer
 
 
-class Standart:
+class Standard:
     STATS_COLOR = "#f3f1b1"
     MAIN_BG_COLOR = "#f0eeba"
     MAIN_FG_COLOR = '#000000'
